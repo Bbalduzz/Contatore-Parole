@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contatore Parole | Text Editor</title>
+</head>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+    body, p{
+        background-color: #292929;
+        color: hsl(49 37% 94%) ;
+        font-family: 'Special Elite', cursive;
+    }
+    span{
+        font-weight: bolder;
+    }
+
+    h2{
+      margin: 1.5%;
+      
+    }
+    #textarea{
+        /* position: absolute; */
+        width: 70%; 
+        height: 590px;
+        margin-top: 2%;
+        background-color: #292929;
+        color: hsl(49 37% 94%);
+        border: 1px solid #555555;
+    }
+
+    .button {
+      border: none;
+      color: white;
+      padding: 10px 25px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 11px;
+      margin: 4px 2px;
+      cursor: pointer;
+    }
+    .button5 {
+      background-color: #292929;
+      color: hsl(49 37% 94%);
+      border: 1px solid #555555;
+    }
+
+    /* .form-control{
+      background-color: #292929;
+      color: hsl(49 37% 94%);
+      border-width: 0%;
+    } */
+
+    button:hover {
+      background-color: #555555;
+      color: white;
+      transition-duration: 0.4s;
+      cursor: pointer;
+    }
+    .tooltip {
+        position: relative;
+        display: inline-block;
+    }
+
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 140px;
+        background-color: #555;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px;
+        position: absolute;
+        z-index: 1;
+        bottom: 150%;
+        left: 50%;
+        margin-left: -75px;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .tooltip .tooltiptext::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #555 transparent transparent transparent;
+    }
+
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 0.9;
+    }
+</style>
+
+<body>
+    <center>
+    <div>
+        <h2>Conteggio parole</h2>
+        <p>Numero parole: <span id="count"></span></p>
+        <p>Numero caratteri: <span id="output">0</span></p>
+        <button onclick="myFunction()" class="button button5">conta</button>
+        <div class="tooltip"><button onclick="CopyFunction()" onmouseout="outFunc()" class="button button5"><span class="tooltiptext" id="myTooltip">copia nella clipboard</span>copia</button></div>
+        <button onclick="SaveMyData()" class="button button5">scarica</button>
+    </div>
+    <div>
+      <p>
+        <label for="input-fileName">Nome File: </label>
+        <input type="text" class="button button5" id="input-fileName" placeholder="Nomina il tuo documento">
+      </p>
+    </div>
+    <div>
+        <textarea id="textarea" name="writtentext" rows="50" cols="50" onkeyup="conto()"></textarea>
+    </div>
+  </center>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.1/FileSaver.min.js"></script>
+<script>
+// alert contatore caratteri
+function myFunction() {
+    let testo = document.getElementById("textarea").value;
+    let testo2 = testo.replace(/ /g, "");
+    alert(
+        'numero caratteri (spazi esclusi): '+ testo2 .length + '\nnumeri caratteri (spazi inclusi): ' + testo .length
+    );   
+};
+// contatore caratteri live
+function conto(){
+        var c = document.getElementById('textarea').value;
+        c=c.replace(/\s/g, '');
+        document.getElementById('output').innerHTML = c.length;
+    };
+
+// contatore parole
+var count = document.getElementById('count');
+var input = document.getElementById('textarea');
+var globalWordCounter = 0;
+// var WORD_LIMIT = 10;
+
+// input.addEventListener('keydown', function(e) {
+//   if (globalWordCounter > WORD_LIMIT && e.code !== "Backspace") {
+//     e.preventDefault();
+//     return alert("You have reached the word limit");
+//   }
+// });
+
+input.addEventListener('keyup', function(e) {
+  wordCounter(e.target.value);
+});
+
+function isWord(str) {
+  var alphaNumericFound = false;
+  for (var i = 0; i < str.length; i++) {
+    var code = str.charCodeAt(i);
+    if ((code > 47 && code < 58) || // numeric (0-9)
+        (code > 64 && code < 91) || // upper alpha (A-Z)
+        (code > 96 && code < 123)) { // lower alpha (a-z)
+      alphaNumericFound = true;
+      return alphaNumericFound;
+    }
+  }
+  return alphaNumericFound;
+}
+
+function wordCounter(text) {
+  var text = input.value.split(' ');
+  var wordCount = 0;
+  for (var i = 0; i < text.length; i++) {
+    if (!text[i] == ' ' && isWord(text[i])) {
+      wordCount++;
+    }
+  }
+  globalWordCounter = wordCount;
+  count.innerText = wordCount;
+};
+
+function CopyFunction(){
+  var copyText = document.getElementById("textarea");
+
+  // Select the text field
+  copyText.select();
+  copyText.setSelectionRange(0, 99999); // For mobile devices
+
+// Copy the text inside the text field 
+  navigator.clipboard.writeText(copyText.value);
+
+// Alert the copied text
+var tooltip = document.getElementById("myTooltip");
+  tooltip.innerHTML = "testo copiato con successo!";
+};
+
+function outFunc(){
+  var tooltip = document.getElementById("myTooltip");
+  tooltip.innerHTML = "copia nella clipboard";
+}
+
+function SaveMyData(){
+  let testo = document.getElementById("textarea").value;
+  let nome = document.getElementById("input-fileName").value;
+  let blob = new Blob([testo], {type: "text/plain;charset=utf-8"});
+    saveAs(blob, nome+".txt");
+}
+</script>
+</html>
